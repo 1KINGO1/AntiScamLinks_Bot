@@ -1,0 +1,10 @@
+{
+  "TOKEN": "your token here",
+  "checkOptions": {
+    "cssChecker": true,
+    "websiteIconChecker": false
+  },
+  "middleware": [
+    "./middleware/basicMiddleware.js"
+  ]
+}
