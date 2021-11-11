@@ -4,38 +4,95 @@ const { Client, Intents } = require("discord.js");
 const parseLink = require("./utils/parseLink.js");
 const checkLink = require("./utils/checkLink.js");
 const fs = require("fs");
-const path = require("path")
+const path = require("path");
+const colors = require("colors");
 
 let token = null;
 let middleware = [];
 let options = null;
 
+const possibleOptions = {
+    "cssChecker": "bool",
+    "websiteIconChecker": "bool",
+    "inSiteBlackWordsList": "array",
+    "inSiteTitleBlackWordsList": "array",
+    "blackListWords": "array"
+}
+
+// log functions
+function error(mes){
+    console.log("[ " + "ERROR".red + " ] " + mes);
+}
+function middleWareLoaded(middleware){
+    console.log("[ " + "MIDDLEWARE".green + " ] " + middleware.yellow + " loaded!")
+}
+function optionsLog(option, value){
+    let posOpt = Object.keys(possibleOptions);
+    if (!posOpt.some((elem) => option === elem)){
+        error("unknown property " + option.red);
+        return false;
+    }
+    if (possibleOptions[option] === "array"){
+        if (!Array.isArray(value) && typeof value !== "boolean"){
+            error("incorrect type of " + option.red + " (must be bool or array)");
+            return false;
+        }
+        else{
+            console.log("[ " + "OPTIONS".green + " ] " + `${option}`.yellow + " with value: " + `${typeof value === "boolean" ? `${value ? `${value}`.green : `${value}`.red}` : "[ ".green + `${value.join(" ")}`.green + " ]".green}`)
+        }
+    }
+    if (possibleOptions[option] === "bool"){
+        if (typeof value !== "boolean"){
+            error("incorrect type of " + option.red + " (must be bool)");
+            return false;
+        }
+        else{
+            console.log("[ " + "OPTIONS".green + " ] " + `${option}`.yellow + " with value: " + `${value}`.green)
+        }
+    }
+}
+
 //parsing config and applying middleware, then starting bot
 !async function(){
+    console.clear()
     let read = fs.readFileSync(path.dirname(__dirname) + "/config.json", 'utf-8');
     const config = JSON.parse(read);
     token = config.TOKEN;
     options = config.checkOptions;
+    //logging config
+    for (let field in options){
+        optionsLog(field, options[field])
+    }
+    //getting middleware
     middleware = await Promise.all(config.middleware.map(async (elem, index) =>
         {
             try{
-                return require(elem);
+                let req = require(elem);
+                middleWareLoaded(elem)
+                return req;
             }
             catch (e) {
-                throw new Error(`Incorrect link to middleware ` + (index + 1));
+                error(elem.red + " invalid link!");
+                return function(){}
             }
         }
     ));
+
 }().then(() => client.login(token))
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
-client.on('ready', () => {
-    console.log(`Logged in as ${client.user.tag}!`);
-});
+client.on('ready', () => {});
 
 client.on('messageCreate', async (message) => {
     //Array of message words
+    try{
+        let content = message.content.toLowerCase()
+        if (options.blackListWords.some((elem) => content.includes(elem.toLowerCase()))){
+            middleware.forEach(mw => mw(message));
+            return;
+        }
+    }catch (e) {}
     let messArr = message.content.split(' ');
     for (let word of messArr){
         //If the word is already a link

@@ -2,7 +2,10 @@
   "TOKEN": "your token here",
   "checkOptions": {
     "cssChecker": true,
-    "websiteIconChecker": false
+    "websiteIconChecker": false,
+    "inSiteBlackWordsList": false,
+    "inSiteTitleBlackWordsList": false,
+    "blackListWords": false
   },
   "middleware": [
     "./middleware/basicMiddleware.js"

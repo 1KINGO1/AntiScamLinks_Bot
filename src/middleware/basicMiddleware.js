@@ -1,4 +1,4 @@
 function basicMiddleware(message){
-    message.reply('Scam link detected!')
+    message.channel.send('trigger')
 }
 module.exports = basicMiddleware;
