@@ -24,32 +24,35 @@ function error(mes){
     console.log("[ " + "ERROR".red + " ] " + mes);
 }
 function middleWareLoaded(middleware){
-    console.log("[ " + "MIDDLEWARE".green + " ] " + middleware.yellow + " loaded!")
+    console.log("[ " + "MIDDLEWARE".green + " ] " + middleware.yellow + " loaded")
 }
 function optionsLog(option, value){
     let posOpt = Object.keys(possibleOptions);
     if (!posOpt.some((elem) => option === elem)){
-        error("unknown property " + option.red);
+        error("Unknown property " + option.red);
         return false;
     }
     if (possibleOptions[option] === "array"){
-        if (!Array.isArray(value) && typeof value !== "boolean"){
-            error("incorrect type of " + option.red + " (must be bool or array)");
+        if ((!Array.isArray(value) && typeof value !== "boolean") || (typeof value === 'boolean' && value)){
+            error("Incorrect type of " + option.red + " (must be false or array)");
             return false;
         }
         else{
-            console.log("[ " + "OPTIONS".green + " ] " + `${option}`.yellow + " with value: " + `${typeof value === "boolean" ? `${value ? `${value}`.green : `${value}`.red}` : "[ ".green + `${value.join(" ")}`.green + " ]".green}`)
+            console.log("[ " + "OPTIONS".green + " ] " + `${option}`.yellow + " with value: " + `${typeof value === "boolean" ? value ? `${value}`.green : `${value}`.red : "[ ".green + `${value.join(" ")}`.green + " ]".green}`)
         }
     }
     if (possibleOptions[option] === "bool"){
         if (typeof value !== "boolean"){
-            error("incorrect type of " + option.red + " (must be bool)");
+            error("Incorrect type of " + `${option}`.red + " (must be boolean)");
             return false;
         }
         else{
-            console.log("[ " + "OPTIONS".green + " ] " + `${option}`.yellow + " with value: " + `${value}`.green)
+            console.log("[ " + "OPTIONS".green + " ] " + `${option}`.yellow + " with value: " + `${value ? `${value}`.green : `${value}`.red}`)
         }
     }
+}
+function botLog(message){
+    console.log("[ " + "BOT".green + " ] " + message)
 }
 
 //parsing config and applying middleware, then starting bot
@@ -78,11 +81,15 @@ function optionsLog(option, value){
         }
     ));
 
-}().then(() => client.login(token))
+}().then(() => client.login(token)).catch(() => {
+    error(`Incorrect bot ` + "token".red)
+})
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
-client.on('ready', () => {});
+client.on('ready', () => {
+    botLog(`Bot login as ` + `${client.user.tag}`.green)
+});
 
 client.on('messageCreate', async (message) => {
     //Array of message words
