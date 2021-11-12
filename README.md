@@ -17,11 +17,11 @@ npm install
 <img src="https://media.discordapp.net/attachments/866965472582828042/908431440251867146/unknown.png" alt="image"/>
 
 <h4>There are only 5 ways to check a link:</h4>
-<h5>• cssChecker  -  `false or true`</h5>
-<h5>• websiteIconChecker  -  `false or true`</h5>
-<h5>• inSiteBlackWordsList  -  `false or array`</h5>
-<h5>• inSiteTitleBlackWordsList  -  `false or array`</h5>
-<h5>• blackListWords  -  `false or array`</h5>
+<h5>• cssChecker  -  `false or true` (Check whether the site has a discord CSS (in some cases it may not work correctly))</h5>
+<h5>• websiteIconChecker  -  `false or true` (Check whether the site has an discord ICON (in some cases it may not work correctly))</h5>
+<h5>• inSiteBlackWordsList  -  `false or array` (Checks if the SITE CONTENT has words from the list)</h5>
+<h5>• inSiteTitleBlackWordsList  -  `false or array` (Checks if the SITE TITLE has words from the list)</h5>
+<h5>• blackListWords  -  `false or array` (Checks if the USER MESSAGE has words from the list)</h5>
 
 <h4>You can run the bot with a command:</h4>
 
